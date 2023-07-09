@@ -19,22 +19,24 @@ node {
     }
 
     stage('Deliver') {
-    try {
-        node {
-            dir(path: env.BUILD_ID) {
+        def VOLUME = "${env.WORKSPACE}/sources:/src"
+        def IMAGE = 'cdrx/pyinstaller-linux:python2'
+
+        try {
+            dir("${env.BUILD_ID}") {
                 unstash(name: 'compiled-results')
-                docker.image('cdrx/pyinstaller-linux:python2').inside("-v ${env.WORKSPACE}/sources:/src") {
-                    sh "pyinstaller -F add2vals.py"
-                }
+                sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
             }
-        }
-    } catch (Exception e) {
-        echo "Error: ${e.toString()}"
-    } finally {
-        success {
-            archiveArtifacts "sources/dist/add2vals"
-            sh "docker run --rm -v ${env.WORKSPACE}/sources:/src cdrx/pyinstaller-linux:python2 rm -rf build dist"
+        } catch (Exception e) {
+            echo 'Error: ' + e.toString()
+        } finally {
+            try {
+                archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+            } catch (Exception e) {
+                echo 'Error archiving artifacts: ' + e.toString()
+            }
+            sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
         }
     }
-}
+
 }

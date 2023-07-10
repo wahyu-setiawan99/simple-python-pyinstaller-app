@@ -7,10 +7,12 @@ import sys
 import calc
 
 print("Please insert the first number:")
-first_number = input()
+x = str(input())
+first_number = x.strip()
 
 print("Please insert the second number:")
-second_number = input()
+y = str(input())
+second_number = y.strip()
 
 argnumbers = len(first_number.split()) + len(second_number.split())
 

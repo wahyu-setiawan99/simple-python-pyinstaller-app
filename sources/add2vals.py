@@ -7,6 +7,9 @@ import sys
 import calc
 
 print("Please insert the first number:")
+
+
+
 x = input()
 first_number = str(x).strip()
 

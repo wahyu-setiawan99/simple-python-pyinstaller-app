@@ -37,14 +37,15 @@ pipeline {
                 IMAGE = 'cdrx/pyinstaller-linux:python2'
             }
             steps {
-                dir(path: env.BUILD_ID) { 
-                    unstash(name: 'compiled-results') 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'" 
-
-                    script {
-                        def appContainer = docker.image("your_app_image").run("-p 19000:8080 -d")
+                script {
+                    dir(path: env.BUILD_ID) {
+                        unstash(name: 'compiled-results')
+                        sh 'pyinstaller --onefile sources/add2vals.py'
+                        sh 'nohup python -m http.server 19000 &'
                         sleep 60
-                        appContainer.stop()
+                        sh 'pkill -f "python -m http.server"'
+                    }
+                }
             }
                 }
             }

@@ -16,4 +16,4 @@ COPY . /app
 # configure the container to run in an executed manner
 ENTRYPOINT [ "python" ]
 
-CMD ["add2vals.py" ]
+CMD ["sources/add2vals.py" ]

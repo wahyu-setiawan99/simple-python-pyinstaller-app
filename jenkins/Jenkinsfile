@@ -38,11 +38,8 @@ pipeline {
             }
             steps {
 
-                sh "docker stop flask_app"
-                sh "docker rm flask_app"
-                
-           
-                
+                sh "ls"
+            
                 sh "docker build -t flask_docker ."
                 sh "docker run -d -p 5001:5001 --name flask_app flask_docker"
                 sleep(60) 

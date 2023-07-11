@@ -32,25 +32,21 @@ pipeline {
         }
         stage('Deploy') { 
             agent any
-
+            environment { 
+                VOLUME = '$(pwd)/sources:/src'
+                IMAGE = 'cdrx/pyinstaller-linux:python2'
+            }
             steps {
-                 dir(path: env.BUILD_ID) {
-                    unstash(name: 'compiled-results')
-                    
-                    sh "cp ${env.WORKSPACE}/requirements.txt requirements.txt"
-                    sh "cp ${env.WORKSPACE}/Dockerfile Dockerfile"
-
-                    sh "docker image build -t flask_docker ."
-                    sh "docker run -p 5001:5001 -d flask_app flask_docker"
-                    sleep(60)
+                dir(path: env.BUILD_ID) { 
+                    unstash(name: 'compiled-results') 
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'" 
                 }
             }
             post {
-                always {
-                    sh "docker stop flask_app"
-                    sh "docker rm flask_app"
+                success {
+                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals" 
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
-            }
-        }
+            }        }
     }
 }

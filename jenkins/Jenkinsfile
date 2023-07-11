@@ -39,13 +39,15 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results') 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
-                    sh '''
-                        export FLASK_APP=add2vals
+                    sh """
+                        docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c '
+                        pyinstaller -F add2vals.py &&
+                        export FLASK_APP=add2vals &&
                         flask --app add2vals run -p 5001
-                    '''
-                    sleep(60)
-                }
+                        '
+                    """
+            sleep(60)
+        }
             }
             post {
                 success {

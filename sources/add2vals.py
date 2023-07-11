@@ -3,34 +3,100 @@ A simple command line tool that takes 2 values and adds them together using
 the calc.py library's 'add2' function.
 '''
 
-import sys
-import calc
+from flask import Flask, request, render_template_string
+from calc import add2
 
-print("Please insert the first number:")
+app = Flask(__name__)
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    error_message = None
+    result = None
+    
+    if request.method == 'POST':
+        first_argument = request.form['first-argument']
+        second_argument = request.form['second-argument']
+        try:
+            # Ensure no spaced word enter and argument is only 2
+            first_argument = str(first_argument).strip()
+            second_argument = str(second_argument).strip()
+            arguments = len(first_argument.split()) + len(second_argument.split())
+            if arguments != 2:
+                raise ValueError("Invalid input. Please enter two arguments without spaces.")
+            
+            result = add2(first_argument, second_argument)
+        except ValueError as e:
+            error_message = str(e)
+    
+    return render_template_string("""
+    <style>
+        body {
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        form {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"] {
+            width: 200px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: red;
+        }
+    </style>
+    
+    <h1>Add2vals App</h1>
+    <form method="post">
+        <label for="first-argument">First Argument:</label>
+        <input type="text" name="first-argument" id="first-argument" required>
+        <br>
+        <label for="second-argument">Second Argument:</label>
+        <input type="text" name="second-argument" id="second-argument" required>
+        <br>
+        <input type="submit" value="Calculate">
+    </form>
 
-x = input()
-first_number = str(x).strip()
+    {% if error_message %}
+    <div class="error">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    
+    <div id="result">
+        {% if result %}
+        The result is {{ result }}
+        {% endif %}
+    </div>
+    """, error_message=error_message, result=result)
 
-print("Please insert the second number:")
-y = input()
-second_number = str(y).strip()
-
-argnumbers = len(first_number.split()) + len(second_number.split())
-
-if argnumbers == 2 :
-    print("")
-    print("The result is " + str(calc.add2(first_number, second_number)))
-    print("")
-    sys.exit(0)
-
-
-if argnumbers != 2 :
-    print("")
-    print("You entered " + str(argnumbers) + " value/s.")
-    print("")
-    print("Usage: run add2valsand and insert the first and second number without space.")
-    print("       If add2vals is not in your path, usage is './add2vals'.")
-    print("       If unbundled, usage is 'python add2vals.py'.")
-    print("")
-    sys.exit(1)
+if __name__ == '__main__':
+    app.run()

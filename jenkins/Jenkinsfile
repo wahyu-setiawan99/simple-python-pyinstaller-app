@@ -41,14 +41,14 @@ pipeline {
                     sh "cp ${env.WORKSPACE}/Dockerfile Dockerfile"
 
                     sh "docker image build -t flask_docker ."
-                    sh "docker run -p 5001:5001 -d flask_docker"
-                    sleep(30)
+                    sh "docker run -p 5001:5001 -d flask_app flask_docker"
+                    sleep(60)
                 }
             }
             post {
                 always {
-                    sh "docker stop flask_docker"
-                    sh "docker rm flask_docker"
+                    sh "docker stop flask_app"
+                    sh "docker rm flask_app"
                 }
             }
         }

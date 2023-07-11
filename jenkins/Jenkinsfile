@@ -41,6 +41,7 @@ pipeline {
                     unstash(name: 'compiled-results')
                     sh "cp ${env.WORKSPACE}/requirements.txt requirements.txt"
                     sh "cat requirements.txt"
+                    sh "ls"
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'pip install -r requirements.txt && python add2vals.py'"
                     sleep(60)
                 }

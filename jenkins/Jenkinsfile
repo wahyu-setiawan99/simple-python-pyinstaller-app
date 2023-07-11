@@ -30,26 +30,31 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') { 
+        stage('Deploy') {
             agent any
-            environment { 
+            environment {
                 VOLUME = '$(pwd)/sources:/src'
                 IMAGE = 'cdrx/pyinstaller-linux:python3'
             }
             steps {
-                dir(path: env.BUILD_ID) { 
-                    unstash(name: 'compiled-results') 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
-                    
-                    sleep(60)
+                dir(path: env.BUILD_ID) {
+                    unstash(name: 'compiled-results')
+                    script {
+                        // Manual Approval
+                        def approval = input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user'
+                        if (approval == 'Proceed') {
+                            // Run the deployment steps
+                            sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
+                            sleep(60)
+                            // Post-deployment actions
+                            archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+                            sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+                        } else {
+                            error('Deployment aborted by user')
+                        }
+                    }
                 }
             }
-            post {
-                success {
-                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals" 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
-                }
-            }        
         }
     }
 }

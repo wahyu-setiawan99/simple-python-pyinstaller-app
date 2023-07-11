@@ -40,8 +40,7 @@ pipeline {
                 
                     unstash(name: 'compiled-results')
 
-                    sh "cp ${env.WORKSPACE}/requirements.txt requirements.txt"
-                    sh "cp ${env.WORKSPACE}/Dockerfile Dockerfile"
+
 
                     sh "docker build -t flask_docker ."
                     sh "docker run -d -p 5001:5001 --name flask_app flask_docker"

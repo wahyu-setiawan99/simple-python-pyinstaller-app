@@ -32,11 +32,22 @@ pipeline {
         }
         stage('Deploy') { 
             agent any
+            environment { 
+                VOLUME = '$(pwd)/sources:/src'
+                IMAGE = 'cdrx/pyinstaller-linux:python3'
+            }
             steps {
-                unstash(name: 'compiled-results')
-                sh "python sources/add2vals.py"
-                sleep(60)
-                sh "killall python"
+                dir(path: env.BUILD_ID) { 
+                    unstash(name: 'compiled-results')
+                    sleep(60)
+                    sh "killall python"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals" 
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+                }
             }
         }
     }

@@ -31,11 +31,7 @@ pipeline {
             }
         }
         stage('Deploy') { 
-            agent {
-                docker {
-                    image 'python:3-alpine'
-                }
-            }
+            agent any
             steps {
                 sh "pip install -r requirements.txt"
                 sh "python sources/add2vals.py"

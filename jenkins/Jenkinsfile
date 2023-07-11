@@ -33,7 +33,7 @@ pipeline {
         stage('Deploy') { 
             agent any
             environment { 
-                VOLUME = '$(pwd)/sources:/src'
+                VOLUME = '$(pwd)/sources/src'
                 IMAGE = 'python:3.8-alpine'
             }
             steps {

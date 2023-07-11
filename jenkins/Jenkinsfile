@@ -37,21 +37,16 @@ pipeline {
                 IMAGE = 'cdrx/pyinstaller-linux:python3'
             }
             steps {
-                 dir(path: env.BUILD_ID) {
+                
                     unstash(name: 'compiled-results')
-                    
-                    
 
                     sh "cp ${env.WORKSPACE}/requirements.txt requirements.txt"
                     sh "cp ${env.WORKSPACE}/Dockerfile Dockerfile"
 
-                    sh "ls"
-                    sh "ls sources"
-
                     sh "docker build -t flask_docker ."
                     sh "docker run -d -p 5001:5001 --name flask_app flask_docker"
                     sleep(60)
-                }
+              
             }
             post {
                 always {

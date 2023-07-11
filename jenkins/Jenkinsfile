@@ -39,8 +39,8 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results') 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'export FLASK_APP=add2vals && flask --app add2vals run -p 5001'
-                    sleep(1)
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'export FLASK_APP=add2vals && flask --app add2vals run -p 5001'"
+                    sleep(60)
                 }
             }
             post {

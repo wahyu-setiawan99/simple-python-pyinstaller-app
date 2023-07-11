@@ -31,25 +31,16 @@ pipeline {
             }
         }
         stage('Deploy') { 
-            agent any
-            environment { 
-                VOLUME = '$(pwd)/sources:/src'
-                IMAGE = 'cdrx/pyinstaller-linux:python3'
+            agent {
+                docker {
+                    image 'python:3-alpine'
+                }
             }
             steps {
-                sh "docker stop flask_docker"
-                sh "docker rm flask_docker"
 
-                sh "docker image build -t flask_docker ."
-                sh "docker run -p 5001:5001 -d flask_docker"
+                sh "python sources/add2vals.py"
                 sleep(60) 
 
-            }
-            post {
-                always {
-                    sh "docker stop flask_docker"
-                    sh "docker rm flask_docker"
-                }
             }
         }
     }

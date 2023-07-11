@@ -39,7 +39,7 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results')
-                    sh "cp ${env.WORKSPACE}/requirements.txt requirements.txt"
+                    sh "cp ${env.WORKSPACE}/requirements.txt /requirements.txt"
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'pip install -r requirements.txt && python add2vals.py'"
                     sleep(60)
                 }

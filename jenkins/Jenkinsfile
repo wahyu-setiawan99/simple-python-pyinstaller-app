@@ -39,11 +39,7 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results')
-                    sh "touch ${VOLUME}/requirements.txt"
-                    sh "cp ${env.WORKSPACE}/requirements.txt ${VOLUME}/requirements.txt"
-                    sh "cat requirements.txt"
-                    sh "ls"
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'pip install -r requirements.txt && python add2vals.py'"
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} /bin/sh -c 'pip install flask==2.3.2 && python soruces/add2vals.py'"
                     sleep(60)
                 }
             }

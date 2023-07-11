@@ -45,12 +45,7 @@ pipeline {
                 sleep(60)        
               
             }
-            post {
-                always {
-                    sh "docker stop flask_app"
-                    sh "docker rm flask_app"
-                }
-            }
+            
         }
     }
 }

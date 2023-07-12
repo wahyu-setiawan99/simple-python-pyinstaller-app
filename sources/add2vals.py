@@ -9,11 +9,12 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     error_message = None
     result = None
-    
+
     if request.method == 'POST':
         first_argument = request.form['first-argument']
         second_argument = request.form['second-argument']
@@ -21,14 +22,16 @@ def index():
             # Ensure no spaced word enter and argument is only 2
             first_argument = str(first_argument).strip()
             second_argument = str(second_argument).strip()
-            arguments = len(first_argument.split()) + len(second_argument.split())
+            arguments = len(first_argument.split()) + \
+                len(second_argument.split())
             if arguments != 2:
-                raise ValueError("Invalid input. Please enter two arguments without spaces.")
-            
+                raise ValueError(
+                    "Invalid input. Please enter two arguments without spaces.")
+
             result = add2(first_argument, second_argument)
         except ValueError as e:
             error_message = str(e)
-    
+
     return render_template_string("""
     <style>
         body {
@@ -99,9 +102,10 @@ def index():
     </div>
     """, error_message=error_message, result=result)
 
+
+if __name__ == "__main__":
+    app.run()
+
 # if __name__ == "__main__":
 #     port = int(os.environ.get('PORT', 5001))
 #     app.run(debug=True, host='0.0.0.0', port=port)
-
-if __name__ == "__main__":
-	app.run()

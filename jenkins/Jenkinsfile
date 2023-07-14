@@ -15,8 +15,7 @@ node {
             echo 'Error: ' + e.toString()
         }
     }
-   stage('Manual Approval') {
-   
+    stage('Manual Approval') {
         script {
             def userInput = input(
                 id: 'userInput',
@@ -35,21 +34,19 @@ node {
             }
         }
   
-}
+    }
 
     stage('Deploy') {
-        
-            stage('Prepare') {
-                unstash(name: 'compiled-results')
-                sleep(60)
-                echo "Please regularly check http://13.229.182.106/ for updates."
-                // deployment-stage Jenkins project is triggered
-                // uploading the unstashed file to the EC2 instance
-                // after this stage is completed
+        stage('Prepare') {
+            unstash(name: 'compiled-results')
+            sleep(60)
+            echo "Please regularly check http://13.229.182.106/ for updates."
+            // deployment-stage Jenkins project is triggered
+            // uploading the unstashed file to the EC2 instance
+            // after this stage is completed
 
-                // configuration of new project with Publish Over SSH plugin
-                // will be shown, please note!
-            }
-       
+            // configuration of new project with Publish Over SSH plugin
+            // will be shown, please note!
+        }
     }
 }

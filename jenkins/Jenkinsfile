@@ -1,7 +1,6 @@
 pipeline {
     agent none
     options {
-        timeout(time: 10, unit: 'MINUTES')
         skipStagesAfterUnstable()
     }
     stages {
@@ -48,16 +47,22 @@ pipeline {
                 IMAGE = 'cdrx/pyinstaller-linux:python3'
             }
             steps {
-                dir(path: env.BUILD_ID) { 
-                    unstash(name: 'compiled-results') 
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F --onefile add2vals.py'"
+                // dir(path: env.BUILD_ID) { 
+                //     unstash(name: 'compiled-results') 
+                //     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F --onefile add2vals.py'"
                     
-                    sleep(60)
-                }
+                //     sleep(60)
+                // }
+              
+                unstash(name: 'compiled-results') 
+                sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F --onefile add2vals.py'"
+                    
+                sleep(60)   
+            
             }
             post {
                 success {
-                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+                    archiveArtifacts "sources/dist/add2vals"
                     
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                     

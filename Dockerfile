@@ -1,19 +1,12 @@
-# start by pulling the python image
-FROM python:3.8-alpine
-
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
-
-# switch working directory
-WORKDIR /app
-
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
-
-# copy every content from the local file to the image
-COPY ./sources /app
-
-# configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
-
-CMD ["add2vals.py" ]
+FROM jenkins/jenkins:2.346.1-jdk11
+USER root
+RUN apt-get update && apt-get install -y lsb-release
+RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+  https://download.docker.com/linux/debian/gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+  https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+RUN apt-get update && apt-get install -y docker-ce-cli
+USER jenkins
+RUN jenkins-plugin-cli --plugins "blueocean:1.25.5 docker-workflow:1.28"

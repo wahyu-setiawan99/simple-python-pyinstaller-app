@@ -1,9 +1,12 @@
 .DS_store
+add2vals-app-key=pair.pem
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.pem
+
+
 
 # C extensions
 *.so

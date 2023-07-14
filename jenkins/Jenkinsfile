@@ -43,18 +43,13 @@ pipeline {
         stage('Deploy') { 
             agent any
             steps {       
-                unstash(name: 'compiled-results')
-                // trigger deploy process and
-                // write necessary script to run the py file in ec2
-                // let know the public link to access  
-                sleep(60)   
+                unstash(name: 'compiled-results')   
+                sleep(60)
+                echo "Please regularly check http://13.229.182.106/ for updates."
+                // deployment-stage jenkins project is triggered
+                // after this stage completed
             }
-            // post {
-            //     success {
-            //         archiveArtifacts "sources/dist/add2vals"
-                    
-            //     }
-            // }        
+    
         }
     }
 }

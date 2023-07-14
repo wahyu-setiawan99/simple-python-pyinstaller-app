@@ -16,15 +16,19 @@ node {
         }
     }
     stage('Manual Approval') {
-        steps {
-            script {
-                def approval = input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user'
-                if (approval == 'Proceed') {
-                    error('Deployment aborted by user')
-                }
-            }
+    script {
+        def userInput = input(
+            message: 'Lanjutkan ke tahap Deploy?',
+            parameters: [
+                [$class: 'ChoiceParameter', name: 'approval', choices: 'Proceed\nAbort', description: 'Select your choice']
+            ],
+            submitter: 'user'
+        )
+        if (userInput.approval == 'Abort') {
+            error('Deployment aborted by user')
         }
     }
+}
     stage('Deploy') {
         node('any') {
             stage('Prepare') {

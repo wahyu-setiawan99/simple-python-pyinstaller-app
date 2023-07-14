@@ -48,6 +48,8 @@ pipeline {
                 echo "Please regularly check http://13.229.182.106/ for updates."
                 // deployment-stage jenkins project is triggered
                 // after this stage completed
+                // configuration of new project that uses Publish Over SSH
+                // will be shown, please note!
             }
     
         }

@@ -38,7 +38,7 @@ node {
 }
 
     stage('Deploy') {
-        node('any') {
+        
             stage('Prepare') {
                 unstash(name: 'compiled-results')
                 sleep(60)
@@ -50,6 +50,6 @@ node {
                 // configuration of new project with Publish Over SSH plugin
                 // will be shown, please note!
             }
-        }
+       
     }
 }

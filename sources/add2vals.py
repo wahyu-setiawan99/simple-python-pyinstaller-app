@@ -5,7 +5,6 @@ the calc.py library's 'add2' function.
 
 from flask import Flask, request, render_template_string
 from calc import add2
-import os
 
 app = Flask(__name__)
 

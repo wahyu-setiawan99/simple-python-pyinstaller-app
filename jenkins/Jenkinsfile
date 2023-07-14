@@ -15,20 +15,28 @@ node {
             echo 'Error: ' + e.toString()
         }
     }
-    stage('Manual Approval') {
-    script {
-        def userInput = input(
-            message: 'Lanjutkan ke tahap Deploy?',
-            parameters: [
-                [$class: 'ChoiceParameter', name: 'approval', choices: 'Proceed\nAbort', description: 'Select your choice']
-            ],
-            submitter: 'user'
-        )
-        if (userInput.approval == 'Abort') {
-            error('Deployment aborted by user')
+   stage('Manual Approval') {
+    steps {
+        script {
+            def userInput = input(
+                id: 'userInput',
+                message: 'Lanjutkan ke tahap Deploy?',
+                parameters: [
+                    choice(
+                        choices: 'Proceed\nAbort',
+                        description: 'Select your choice',
+                        name: 'approval'
+                    )
+                ],
+                submitter: 'user'
+            )
+            if (userInput == 'Abort') {
+                error('Deployment aborted by user')
+            }
         }
     }
 }
+
     stage('Deploy') {
         node('any') {
             stage('Prepare') {

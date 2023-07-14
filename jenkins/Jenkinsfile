@@ -16,7 +16,7 @@ node {
         }
     }
    stage('Manual Approval') {
-    steps {
+   
         script {
             def userInput = input(
                 id: 'userInput',
@@ -34,7 +34,7 @@ node {
                 error('Deployment aborted by user')
             }
         }
-    }
+  
 }
 
     stage('Deploy') {

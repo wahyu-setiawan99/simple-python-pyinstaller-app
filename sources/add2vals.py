@@ -77,7 +77,7 @@ def index():
         }
     </style>
     
-    <h1>Add2vals MyApp</h1>
+    <h1>Add2vals MyApps</h1>
     <form method="post">
         <label for="first-argument">First Argument:</label>
         <input type="text" name="first-argument" id="first-argument" required>

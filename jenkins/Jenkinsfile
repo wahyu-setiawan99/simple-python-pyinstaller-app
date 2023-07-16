@@ -1,50 +1,61 @@
-node {
-    stage('Build') {
-        docker.image('python:3-alpine').inside {
-            sh 'ls'
-            sh 'pwd'
-            sh 'python -m py_compile sources/add2vals.py sources/calc.py'
-            stash(name: 'compiled-results', includes: 'sources/*.py*')
-        }
+pipeline {
+    agent none
+    options {
+        skipStagesAfterUnstable()
     }
-
-    stage('Test') {
-        docker.image('qnib/pytest').inside {
-            try {
-                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
-            } catch (Exception e) {
-                echo "Test failed: ${e.getMessage()}"
-            } finally {
-                junit 'test-reports/results.xml'
+    stages {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'python:3-alpine'
+                }
+            }
+            steps {
+                sh 'python -m py_compile sources/add2vals.py sources/calc.py'
+                sh 'ls'
+                sh 'pwd'
+                stash(name: 'compiled-results', includes: 'sources/*.py*')
             }
         }
-    }
-
-
-
-    stage('Manual Approval') {
-        def approval = input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user'
-        if (approval == 'Proceed') {
-            error('Deployment aborted by user')
+        stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
+            }
+            steps {
+                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
+            }
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
+            }
         }
-    }
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def approval = input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user'
+                    if (approval == 'Proceed') {
+                        error('Deployment aborted by user')
+                    }
+                }
+            }
+        }
+        stage('Deploy') { 
+            agent any
+            steps {       
+                unstash(name: 'compiled-results')   
+                sleep(60)
+                echo "Please regularly check http://13.229.182.106/ for updates."
+                // deployment-stage jenkins project is triggered
+                // uploading the unstashed file to ec2 instance
+                // after this stage completed
 
-
-    stage('Deploy') {
-        node {
-            checkout scm
-
-            unstash(name: 'compiled-results')
-
-            sleep(60)
-            
-            echo "Please regularly check http://13.229.182.106/ for updates."
-            
-            // deployment-stage jenkins project is triggered
-            // uploading the unstashed file to ec2 instance
-            // after this stage completed
-            // configuration of new project with Publish Over SSH plugin
-            // will be shown, please note!
+                // configuration of new project with Publish Over SSH plugin
+                // will be shown, please note!
+            }
+    
         }
     }
 }
